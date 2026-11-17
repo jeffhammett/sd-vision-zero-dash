@@ -1,0 +1,210 @@
+openapi: 3.1.0
+info:
+  title: SD Vision Zero Dashboard API
+  version: 1.0.0
+  description: |
+    Single source of truth for the HTTP contract between the Flask backend and
+    the React frontend. Both sides generate their types from this file:
+
+      backend/entity/generated.py   (datamodel-code-generator -> Pydantic v2)
+      frontend/src/api/schema.d.ts  (openapi-typescript)
+
+    Run `make generate` from the repo root after editing this file.
+
+servers:
+  - url: http://127.0.0.1:5000
+    description: Local Flask dev server
+
+paths:
+  /incidents:
+    get:
+      operationId: listIncidents
+      summary: Paginated list of collisions with at least one injury or fatality
+      parameters:
+        - name: page
+          in: query
+          description: 1-based page number
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+        - name: filter
+          in: query
+          description: JSON-encoded IncidentFilter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentFilter"
+      responses:
+        "200":
+          description: One page of incidents
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentList"
+
+  /incidents/metadata:
+    get:
+      operationId: getIncidentMetadata
+      summary: Summary statistics over all injury/fatality collisions
+      responses:
+        "200":
+          description: Metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentMetadata"
+
+  /articles:
+    get:
+      operationId: listArticles
+      summary: Relevant news articles, newest first
+      responses:
+        "200":
+          description: Articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Article"
+
+components:
+  schemas:
+    Severity:
+      type: string
+      description: Coarse injury severity bucket used by the incident filter
+      enum: [Light, Serious, Fatal]
+
+    IncidentFilter:
+      type: object
+      properties:
+        neighborhoods:
+          type: array
+          items:
+            type: string
+        severity:
+          $ref: "#/components/schemas/Severity"
+
+    Incident:
+      type: object
+      required:
+        - report_id
+        - date_time
+        - charge_desc
+        - injured
+        - killed
+        - neighborhood
+        - full_address
+        - latitude
+        - longitude
+      properties:
+        report_id:
+          type: string
+          description: Collision report number
+        date_time:
+          type: string
+          format: date
+          description: Date of the collision (YYYY-MM-DD)
+        charge_desc:
+          type: [string, "null"]
+          description: Primary collision factor description; null if not a hit & run
+        injured:
+          type: integer
+        killed:
+          type: integer
+        neighborhood:
+          type: string
+        full_address:
+          type: string
+        latitude:
+          type: [number, "null"]
+        longitude:
+          type: [number, "null"]
+
+    IncidentList:
+      type: object
+      required: [incidents, page, pageSize, totalIncidents]
+      properties:
+        incidents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Incident"
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalIncidents:
+          type: integer
+          description: Total matching incidents across all pages
+
+    IncidentMetadata:
+      type: object
+      required: [numberOfDaysSinceLastIncident, latestDate]
+      properties:
+        numberOfDaysSinceLastIncident:
+          type: integer
+        latestDate:
+          type: string
+          format: date-time
+
+    ArticleSource:
+      type: string
+      enum: [FOX5, NBC7]
+
+    Article:
+      type: object
+      description: One row of the articles CSV stored in S3
+      required:
+        - id
+        - web_id
+        - title
+        - link
+        - date_posted
+        - source
+        - unique_id
+        - created_at
+        - updated_at
+        - is_relevant
+      properties:
+        id:
+          type: string
+          format: uuid
+        web_id:
+          oneOf:
+            - type: string
+            - type: integer
+        title:
+          type: string
+        link:
+          type: string
+          format: uri
+        date_posted:
+          type: string
+          format: date-time
+        summary:
+          type: [string, "null"]
+        source:
+          $ref: "#/components/schemas/ArticleSource"
+        text:
+          type: [string, "null"]
+        unique_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        is_relevant:
+          type: boolean
+        collision_location:
+          type: [string, "null"]
+        collision_date:
+          type: [string, "null"]

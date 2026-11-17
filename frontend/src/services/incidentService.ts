@@ -1,43 +1,41 @@
 import axios from "axios";
 import { ALL } from "../utils/constants";
+import type { Incident, IncidentFilter, IncidentList, IncidentMetadata, ListIncidentsQuery, Severity } from "../api/types";
 
-export type Incident = {
-    report_id: string,
-    date_time: string,
-    full_address: string,
-    charge_desc: string,
-    injured: number,
-    killed: number,
-    latitude: number | null,
-    longitude: number | null,
-}
+// Re-exported so existing component imports keep working.
+export type { Incident, IncidentFilter, IncidentList, IncidentMetadata };
 
-export type IncidentListDTO = {
-    incidents: Incident[],
-    page: number,
-    pageSize: number,
-    totalIncidents: number
-}
+const API_BASE_URL: string = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
-
-export type IncidentFilter = {
+/** UI-side filter state: the dropdown values, where ALL means "no filter". */
+export type IncidentFilterSelection = {
     neighborhood?: string
     severity?: string
 }
 
-export async function fetchIncidents(filter: IncidentFilter, page: number, pageSize: number): Promise<IncidentListDTO> {
-    const { neighborhood, severity } = filter
-    const params: Record<string, string | number> = { page, pageSize }
-    params.filter = JSON.stringify({
-        ...(neighborhood && neighborhood !== ALL) && { neighborhoods: [neighborhood] },
-        ...(severity && severity !== ALL) && { severity: severity }
-    })
-    const response = await axios.get<IncidentListDTO>(`${API_BASE_URL}/incidents`, { params });
+function toIncidentFilter(selection: IncidentFilterSelection): IncidentFilter {
+    const { neighborhood, severity } = selection
+    const filter: IncidentFilter = {}
+    if (neighborhood && neighborhood !== ALL) {
+        filter.neighborhoods = [neighborhood]
+    }
+    if (severity && severity !== ALL) {
+        filter.severity = severity as Severity
+    }
+    return filter
+}
+
+export async function fetchIncidents(selection: IncidentFilterSelection, page: number, pageSize: number): Promise<IncidentList> {
+    const params: ListIncidentsQuery = {
+        page,
+        pageSize,
+        filter: JSON.stringify(toIncidentFilter(selection)),
+    }
+    const response = await axios.get<IncidentList>(`${API_BASE_URL}/incidents`, { params });
     return response.data;
 };
 
-export async function fetchIncidentMetadata(): Promise<IncidentListDTO> {
-    const response = await axios.get(`${API_BASE_URL}/incidents/metadata`);
+export async function fetchIncidentMetadata(): Promise<IncidentMetadata> {
+    const response = await axios.get<IncidentMetadata>(`${API_BASE_URL}/incidents/metadata`);
     return response.data;
 }

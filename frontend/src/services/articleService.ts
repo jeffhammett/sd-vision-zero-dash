@@ -1,36 +1,21 @@
 import axios from 'axios';
+import type { Article } from '../api/types';
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5083';
+// Re-exported so existing component imports keep working.
+export type { Article };
 
-enum SOURCE_TYPE {
-    FOX5 = 'FOX5',
-    NBC7 = 'NBC7',
-}
-
-export type Article = {
-    created_at: string,
-    date_posted: string,
-    id: string,
-    is_relevant: boolean,
-    link: string,
-    source: SOURCE_TYPE,
-    summary: null,
-    title: string,
-    unique_id: string,
-    updated_at: string,
-    web_id: string | number,
-}
+const API_BASE_URL: string = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5083';
 
 export async function fetchArticles(): Promise<Article[]> {
-    const response = await axios.get(`${API_BASE_URL}/articles`);
+    const response = await axios.get<Article[]>(`${API_BASE_URL}/articles`);
     return response.data;
 };
 
 export function daysSinceLastFatality(articles: Article[]): number {
     // sort articles by date, descending
-    const sortedArticles = [...articles].sort((a, b) => {
-        const dateA = new Date(a.date_posted).getTime();
-        const dateB = new Date(b.date_posted).getTime();
+    const sortedArticles: Article[] = [...articles].sort((a: Article, b: Article) => {
+        const dateA: number = new Date(a.date_posted).getTime();
+        const dateB: number = new Date(b.date_posted).getTime();
         return dateB - dateA; // descending order (most recent first)
     });
 
@@ -39,10 +24,10 @@ export function daysSinceLastFatality(articles: Article[]): number {
         return 0;
     }
 
-    const mostRecentDate = new Date(sortedArticles[0].date_posted);
-    const today = new Date();
-    const diffInMilliseconds = today.getTime() - mostRecentDate.getTime();
-    const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+    const mostRecentDate: Date = new Date(sortedArticles[0].date_posted);
+    const today: Date = new Date();
+    const diffInMilliseconds: number = today.getTime() - mostRecentDate.getTime();
+    const diffInDays: number = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
 
     // return that number
     return diffInDays;
