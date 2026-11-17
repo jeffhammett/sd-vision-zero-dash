@@ -62,7 +62,7 @@ function App() {
     const loadIncidentMetadata = async () => {
         try {
           const incidentMetadata = await fetchIncidentMetadata()
-          const daysResponse = incidentMetadata?.number_of_days_since_last_incident ?? 0
+          const daysResponse = incidentMetadata?.numberOfDaysSinceLastIncident ?? 0
           setDays(daysResponse)
         } catch (err) {
           console.error('Error fetching incidents:', err)

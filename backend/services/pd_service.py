@@ -5,8 +5,9 @@ import pytz
 from services.geocoding_service import geocode_address
 from utils.pd_enums import Column, translate_severity
 from utils.translations import NEIGHBORHOOD_TO_BEATS
-from entity.Incident import IncidentDTO, IncidentListDTO, IncidentMetadataDTO
+from entity.generated import Incident, IncidentList, IncidentMetadata
 from typing import Tuple
+from datetime import date
 
 
 COLLISIONS_DF_URL = "https://seshat.datasd.org/traffic_collision_details/pd_collisions_details_datasd.csv"
@@ -101,34 +102,41 @@ def paginate(df: pd.DataFrame, page: int = 1, page_size: int = 10) -> pd.DataFra
     return df[start:end]
 
 
-def map_date_time_to_string(date_time: pd.Timestamp) -> str:
-    return date_time.strftime("%Y-%m-%d")
+def map_date_time_to_date(date_time: pd.Timestamp) -> date:
+    return date_time.date()
 
 
-def map_incident_dict_to_incident_dto(incident_dicts: list[dict]) -> list[IncidentDTO]:
-    incident_dtos = []
+def map_charge_desc(charge_desc: object) -> str | None:
+    # The CSV leaves charge_desc empty when the collision was not a hit & run,
+    # which pandas reads as NaN.
+    if charge_desc is None or (isinstance(charge_desc, float) and pd.isna(charge_desc)):
+        return None
+    return str(charge_desc)
+
+
+def map_incident_dict_to_incident_dto(incident_dicts: list[dict]) -> list[Incident]:
+    incident_dtos: list[Incident] = []
     for incident_dict in incident_dicts:
-        incident_dto = IncidentDTO()
-        incident_dto.report_id = incident_dict.get(Column.REPORT_ID)
-        incident_dto.date_time = map_date_time_to_string(
-            incident_dict.get(Column.DATE_TIME)
-        )
-        incident_dto.charge_desc = incident_dict.get(Column.CHARGE_DESC)
-        incident_dto.injured = incident_dict.get(Column.INJURED)
-        incident_dto.killed = incident_dict.get(Column.KILLED)
-        incident_dto.neighborhood = incident_dict.get(Column.NEIGHBORHOOD)
-        incident_dto.full_address = incident_dict.get(Column.FULL_ADDRESS)
+        full_address: str = incident_dict.get(Column.FULL_ADDRESS)
 
         # Geocode the address to get lat/lng
-        coords = geocode_address(incident_dto.full_address)
-        if coords:
-            incident_dto.latitude = coords[0]
-            incident_dto.longitude = coords[1]
-        else:
-            incident_dto.latitude = None
-            incident_dto.longitude = None
+        coords = geocode_address(full_address)
+        latitude: float | None = coords[0] if coords else None
+        longitude: float | None = coords[1] if coords else None
 
-        incident_dtos.append(vars(incident_dto))
+        incident_dtos.append(
+            Incident(
+                report_id=str(incident_dict.get(Column.REPORT_ID)),
+                date_time=map_date_time_to_date(incident_dict.get(Column.DATE_TIME)),
+                charge_desc=map_charge_desc(incident_dict.get(Column.CHARGE_DESC)),
+                injured=int(incident_dict.get(Column.INJURED)),
+                killed=int(incident_dict.get(Column.KILLED)),
+                neighborhood=incident_dict.get(Column.NEIGHBORHOOD),
+                full_address=full_address,
+                latitude=latitude,
+                longitude=longitude,
+            )
+        )
     return incident_dtos
 
 
@@ -142,35 +150,33 @@ def get_incidents_and_count(
     return paginated_df, len(filtered_df)
 
 
-def get_incident_metadata(df: pd.DataFrame) -> IncidentMetadataDTO:
+def get_incident_metadata(df: pd.DataFrame) -> IncidentMetadata:
     la_tz = pytz.timezone("America/Los_Angeles")
-    dto_object = IncidentMetadataDTO()
-    dto_object.latest_date = df[Column.DATE_TIME].max()
 
     # Get current date in LA timezone
     now_la = pd.Timestamp.now(tz=la_tz).date()
 
     # Assume latest_date is in LA timezone (localize if naive)
-    latest_date = dto_object.latest_date
+    latest_date: pd.Timestamp = df[Column.DATE_TIME].max()
     if latest_date.tzinfo is None:
         latest_date = la_tz.localize(latest_date)
     latest_date_la = latest_date.date()
 
-    dto_object.number_of_days_since_last_incident = (now_la - latest_date_la).days
-    return dto_object
+    return IncidentMetadata(
+        number_of_days_since_last_incident=(now_la - latest_date_la).days,
+        latest_date=latest_date,
+    )
 
 
 def map_incident_df_to_incident_list_dto(
     df: pd.DataFrame, page: int, page_size: int, total: int
-) -> IncidentListDTO:
-    dto_object = IncidentListDTO()
-    dto_object.incidents = map_incident_dict_to_incident_dto(
-        df.to_dict(orient="records")
+) -> IncidentList:
+    return IncidentList(
+        incidents=map_incident_dict_to_incident_dto(df.to_dict(orient="records")),
+        page=page,
+        page_size=page_size,
+        total_incidents=total,
     )
-    dto_object.page = page
-    dto_object.pageSize = page_size
-    dto_object.totalIncidents = total
-    return dto_object
 
 
 def parse_full_address(df: pd.DataFrame) -> pd.DataFrame:
