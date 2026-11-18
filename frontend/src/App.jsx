@@ -7,7 +7,9 @@ import { fetchIncidentMetadata, fetchIncidents } from './services/incidentServic
 import { IncidentTable } from './components/IncidentTable'
 import { IncidentMap } from './components/IncidentMap'
 import { FilterBar } from './components/FilterBar'
+import { DateFilterBar } from './components/DateFilterBar'
 import { ALL } from './utils/constants';
+import { Divider } from '@mui/material';
 
 const shittyCache = new Map()
 
@@ -86,6 +88,8 @@ function App() {
     <>
       <Header />
       <Counter days={days} />
+      <Divider sx={{margin: 2, bgcolor: '#fff'}}></Divider>
+      <DateFilterBar />
       <Box sx={{
         display: 'flex',
         flexDirection: 'row',
