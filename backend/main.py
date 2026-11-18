@@ -41,6 +41,13 @@ def incidents() -> tuple[Response, int]:
     page: int = request.args.get("page", default=1, type=int)
     page_size: int = request.args.get("pageSize", default=10, type=int)
 
+
+
+
+
+
+
+
     # Fetch paginated incidents
     incidents_df, total = get_incidents_and_count(
         incident_filter.model_dump(exclude_none=True), page=page, page_size=page_size
