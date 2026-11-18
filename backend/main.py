@@ -41,20 +41,15 @@ def incidents() -> tuple[Response, int]:
     page: int = request.args.get("page", default=1, type=int)
     page_size: int = request.args.get("pageSize", default=10, type=int)
 
-
-
-
-
-
-
-
     # Fetch paginated incidents
     incidents_df, total = get_incidents_and_count(
         incident_filter.model_dump(exclude_none=True), page=page, page_size=page_size
     )
 
     # Map to DTO
-    mapped_response: IncidentList = map_incident_df_to_incident_list_dto(incidents_df, page, page_size, total)
+    mapped_response: IncidentList = map_incident_df_to_incident_list_dto(
+        incidents_df, page, page_size, total
+    )
 
     return jsonify(mapped_response.model_dump(mode="json", by_alias=True)), 200
 

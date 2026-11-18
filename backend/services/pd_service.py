@@ -55,16 +55,16 @@ def read_pd_csv(filter: IncidentFilter = {}) -> pd.DataFrame:
         incident_df = incident_df[
             incident_df[Column.PERSON_INJURY_LVL].isin(valid_values)
         ]
-        
-    if ('start_date' in filter) and ('end_date' in filter):
-        if filter['start_date'] > filter['end_date']:
-            raise ValueError('Cannot have start date greater than end date')
 
-    if 'start_date' in filter:
-        incident_df = incident_df[incident_df[Column.DATE_TIME] >= filter['start_date']]
+    if ("start_date" in filter) and ("end_date" in filter):
+        if filter["start_date"] > filter["end_date"]:
+            raise ValueError("Cannot have start date greater than end date")
 
-    if 'end_date' in filter:
-        incident_df = incident_df[incident_df[Column.DATE_TIME] <= filter['end_date']]
+    if "start_date" in filter:
+        incident_df = incident_df[incident_df[Column.DATE_TIME] >= filter["start_date"]]
+
+    if "end_date" in filter:
+        incident_df = incident_df[incident_df[Column.DATE_TIME] <= filter["end_date"]]
 
     # Create a mapping: index = beat, value = neighborhood
     mapping = beats_df.set_index(Column.BEAT)[Column.NEIGHBORHOOD]

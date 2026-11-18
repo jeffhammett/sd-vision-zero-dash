@@ -1,12 +1,19 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material"
-import { ALL } from "../utils/constants"
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
+import { ALL } from "../utils/constants";
 
 interface FilterBarProps {
-  neighborhood: string
-  setNeighborhoodFilter: (hood: string | undefined) => void
-  severity: string
-  setSeverityFilter: (sev: string | undefined) => void
-  incidentTableLoading: boolean
+  neighborhood: string;
+  setNeighborhoodFilter: (hood: string | undefined) => void;
+  severity: string;
+  setSeverityFilter: (sev: string | undefined) => void;
+  incidentTableLoading: boolean;
 }
 
 export const NEIGHBORHOOD_OPTIONS: string[] = [
@@ -20,27 +27,37 @@ export const NEIGHBORHOOD_OPTIONS: string[] = [
   "Mid-City",
   "Navajo Communities",
   "Urban Core",
-]
+];
 
-export const SEVERITY_OPTIONS: string[] = [
-  ALL,
-  "Light",
-  "Serious",
-  "Fatal"
-]
+export const SEVERITY_OPTIONS: string[] = [ALL, "Light", "Serious", "Fatal"];
 
 export const FilterBar: React.FC<FilterBarProps> = (props: FilterBarProps) => {
-  const { neighborhood, setNeighborhoodFilter, severity, setSeverityFilter, incidentTableLoading } = props
+  const {
+    neighborhood,
+    setNeighborhoodFilter,
+    severity,
+    setSeverityFilter,
+    incidentTableLoading,
+  } = props;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', gap: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        gap: 1,
+      }}
+    >
       <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
         <InputLabel id="severity-filter-label">Severity</InputLabel>
         <Select
           labelId="severity-filter-label"
           value={severity}
           label="Severity"
-          onChange={(event: SelectChangeEvent<string>) => setSeverityFilter(event.target.value)}
+          onChange={(event: SelectChangeEvent<string>) =>
+            setSeverityFilter(event.target.value)
+          }
           disabled={incidentTableLoading}
         >
           {SEVERITY_OPTIONS.map((val: string) => (
@@ -56,7 +73,9 @@ export const FilterBar: React.FC<FilterBarProps> = (props: FilterBarProps) => {
           labelId="neighborhood-filter-label"
           value={neighborhood}
           label="Neighborhood"
-          onChange={(event: SelectChangeEvent<string>) => setNeighborhoodFilter(event.target.value)}
+          onChange={(event: SelectChangeEvent<string>) =>
+            setNeighborhoodFilter(event.target.value)
+          }
           disabled={incidentTableLoading}
         >
           {NEIGHBORHOOD_OPTIONS.map((hood: string) => (
@@ -67,5 +86,5 @@ export const FilterBar: React.FC<FilterBarProps> = (props: FilterBarProps) => {
         </Select>
       </FormControl>
     </Box>
-  )
-}
+  );
+};

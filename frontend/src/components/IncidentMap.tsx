@@ -72,7 +72,10 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   const getMarkerIcon = useCallback(
     (incident: Incident, isHovered: boolean): google.maps.Symbol => {
       const size = isHovered ? 16 : 8;
-      const color: string = incident.killed > 0 ? theme.palette.error.main : theme.palette.warning.main;
+      const color: string =
+        incident.killed > 0
+          ? theme.palette.error.main
+          : theme.palette.warning.main;
 
       return {
         path: google.maps.SymbolPath.CIRCLE,
@@ -83,7 +86,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         scale: size,
       };
     },
-    [theme]
+    [theme],
   );
 
   // Initialize map
@@ -106,7 +109,9 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
           return;
         }
 
-        const { Map } = (await google.maps.importLibrary("maps")) as google.maps.MapsLibrary;
+        const { Map } = (await google.maps.importLibrary(
+          "maps",
+        )) as google.maps.MapsLibrary;
 
         if (!mounted || !mapContainerRef.current) return;
 
@@ -156,7 +161,6 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
     // Add markers for incidents with valid coordinates
     incidents?.forEach((incident) => {
       if (incident.latitude !== null && incident.longitude !== null) {
-
         const marker = new google.maps.Marker({
           map: mapRef.current,
           position: { lat: incident.latitude, lng: incident.longitude },
@@ -199,7 +203,9 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   useEffect(() => {
     if (!mapReady || !infoWindowRef.current) return;
 
-    const incident: Incident | undefined = incidents?.find((i) => i.report_id === clickedIncidentId);
+    const incident: Incident | undefined = incidents?.find(
+      (i) => i.report_id === clickedIncidentId,
+    );
     const marker: google.maps.Marker | undefined = clickedIncidentId
       ? markersRef.current.get(clickedIncidentId)
       : undefined;

@@ -40,7 +40,17 @@ const columns: Column[] = [
 ];
 
 export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
-  const { loading, incidents, page, totalIncidents, pageSize, onPageChange, hoveredIncidentId, onHoverChange, setClickedIncidentId } = props;
+  const {
+    loading,
+    incidents,
+    page,
+    totalIncidents,
+    pageSize,
+    onPageChange,
+    hoveredIncidentId,
+    onHoverChange,
+    setClickedIncidentId,
+  } = props;
 
   const handleChangePage = async (_: unknown, newPage: number) => {
     await onPageChange(_, newPage);
@@ -79,7 +89,11 @@ export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
       }}
     >
       <TableContainer sx={{ flex: 1, overflow: "auto" }}>
-        <Table stickyHeader aria-label="sticky table" sx={{ height: loading ? "100%" : "auto" }}>
+        <Table
+          stickyHeader
+          aria-label="sticky table"
+          sx={{ height: loading ? "100%" : "auto" }}
+        >
           <TableHead>
             <TableRow>
               {columns.map((column) => (
@@ -94,32 +108,34 @@ export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
             </TableRow>
           </TableHead>
           <TableBody sx={loading ? { height: "100%" } : undefined}>
-            {loading ? spinner : incidents?.map((row) => {
-              return (
-                <TableRow
-                  key={row.report_id}
-                  sx={(theme: Theme) => ({
-                    backgroundColor:
-                      hoveredIncidentId === row.report_id
-                        ? theme.palette.action.hover
-                        : alpha(theme.palette.common.white, 0.06),
-                    cursor: "pointer",
-                  })}
-                  onMouseEnter={() => onHoverChange(row.report_id)}
-                  onMouseLeave={() => onHoverChange(null)}
-                  onClick={() => setClickedIncidentId(row.report_id)}
-                >
-                  {columns.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {value}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
+            {loading
+              ? spinner
+              : incidents?.map((row) => {
+                  return (
+                    <TableRow
+                      key={row.report_id}
+                      sx={(theme: Theme) => ({
+                        backgroundColor:
+                          hoveredIncidentId === row.report_id
+                            ? theme.palette.action.hover
+                            : alpha(theme.palette.common.white, 0.06),
+                        cursor: "pointer",
+                      })}
+                      onMouseEnter={() => onHoverChange(row.report_id)}
+                      onMouseLeave={() => onHoverChange(null)}
+                      onClick={() => setClickedIncidentId(row.report_id)}
+                    >
+                      {columns.map((column) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {value}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
           </TableBody>
         </Table>
       </TableContainer>
