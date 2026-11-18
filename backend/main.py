@@ -47,9 +47,7 @@ def incidents() -> tuple[Response, int]:
     )
 
     # Map to DTO
-    mapped_response: IncidentList = map_incident_df_to_incident_list_dto(
-        incidents_df, page, page_size, total
-    )
+    mapped_response: IncidentList = map_incident_df_to_incident_list_dto(incidents_df, page, page_size, total)
 
     return jsonify(mapped_response.model_dump(mode="json", by_alias=True)), 200
 
