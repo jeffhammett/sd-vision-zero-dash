@@ -63,10 +63,6 @@ function App() {
 
   useEffect(() => {
     loadIncidents();
-  }, []);
-
-  useEffect(() => {
-    loadIncidents();
   }, [severity, neighborhood, incidentTablePage]);
 
   useEffect(() => {
@@ -93,8 +89,16 @@ function App() {
 
   if (loading)
     return (
-      <Stack sx={{ p: 4, alignItems: "center", textAlign: "center" }}>
-        <CircularProgress />{" "}
+      <Stack
+        sx={{
+          p: 4,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress color="secondary" />
       </Stack>
     );
   if (error)
