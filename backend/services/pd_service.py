@@ -40,8 +40,6 @@ def read_pd_csv(filter: IncidentFilter = {}) -> pd.DataFrame:
 
     incident_df = pd.read_csv(COLLISIONS_DF_URL, parse_dates=[Column.DATE_TIME])
     beats_df = pd.read_csv(BEATS_DF_URL)
-    
-    print(filter)
 
     if "neighborhoods" in filter:
         beats_to_include = []
