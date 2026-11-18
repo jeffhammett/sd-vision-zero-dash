@@ -10,6 +10,7 @@ import TablePagination from "@mui/material/TablePagination";
 import React from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import { alpha, Theme } from "@mui/material/styles";
 
 interface TableProps {
   incidents: Incident[];
@@ -40,8 +41,6 @@ const columns: Column[] = [
 
 export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
   const { loading, incidents, page, totalIncidents, pageSize, onPageChange, hoveredIncidentId, onHoverChange, setClickedIncidentId } = props;
-
-  const cellStyling = { color: "#fff", borderColor: "#444" };
 
   const handleChangePage = async (_: unknown, newPage: number) => {
     await onPageChange(_, newPage);
@@ -75,8 +74,6 @@ export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
       sx={{
         width: "100%",
         height: "100%",
-        backgroundColor: "#1a1a1a",
-        color: "#fff",
         display: "flex",
         flexDirection: "column",
       }}
@@ -89,13 +86,7 @@ export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{
-                    minWidth: column.minWidth,
-                    fontWeight: "bold",
-                    fontSize: "20px",
-                    backgroundColor: "#1a1a1a",
-                    color: "#fff",
-                  }}
+                  sx={{ minWidth: column.minWidth }}
                 >
                   {column.label}
                 </TableCell>
@@ -105,13 +96,15 @@ export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
           <TableBody sx={loading ? { height: "100%" } : undefined}>
             {loading ? spinner : incidents?.map((row) => {
               return (
-                <tr
+                <TableRow
                   key={row.report_id}
-                  style={{
+                  sx={(theme: Theme) => ({
                     backgroundColor:
-                      hoveredIncidentId === row.report_id ? "#3a3a3a" : "#2a2a2a",
+                      hoveredIncidentId === row.report_id
+                        ? theme.palette.action.hover
+                        : alpha(theme.palette.common.white, 0.06),
                     cursor: "pointer",
-                  }}
+                  })}
                   onMouseEnter={() => onHoverChange(row.report_id)}
                   onMouseLeave={() => onHoverChange(null)}
                   onClick={() => setClickedIncidentId(row.report_id)}
@@ -119,16 +112,12 @@ export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                        sx={cellStyling}
-                      >
+                      <TableCell key={column.id} align={column.align}>
                         {value}
                       </TableCell>
                     );
                   })}
-                </tr>
+                </TableRow>
               );
             })}
           </TableBody>
@@ -142,16 +131,6 @@ export const IncidentTable: React.FC<TableProps> = (props: TableProps) => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={() => {}}
-        sx={{
-          color: "#fff",
-          borderTop: "1px solid #444",
-          ".MuiTablePagination-actions button": {
-            color: "#fff",
-          },
-          ".MuiTablePagination-displayedRows": {
-            color: "#fff",
-          },
-        }}
       />
     </Paper>
   );
