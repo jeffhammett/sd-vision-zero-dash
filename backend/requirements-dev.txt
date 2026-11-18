@@ -1,3 +1,5 @@
 # Tooling only; not needed at runtime. Install with: pip install -r requirements-dev.txt
 -r requirements.txt
 datamodel-code-generator==0.97.0
+pre-commit==4.3.0
+ruff==0.14.4

@@ -1,15 +1,22 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, SxProps, Theme, Typography } from "@mui/material"
-import { ALL } from "../utils/constants"
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
+import { ALL } from "../utils/constants";
 
 interface FilterBarProps {
-  neighborhood: string
-  setNeighborhoodFilter: (hood: string | undefined) => void
-  severity: string
-  setSeverityFilter: (sev: string | undefined) => void
-  incidentTableLoading: boolean
+  neighborhood: string;
+  setNeighborhoodFilter: (hood: string | undefined) => void;
+  severity: string;
+  setSeverityFilter: (sev: string | undefined) => void;
+  incidentTableLoading: boolean;
 }
 
-export const NEIGHBORHOOD_OPTIONS = [
+export const NEIGHBORHOOD_OPTIONS: string[] = [
   ALL,
   "South San Diego",
   "Point Loma",
@@ -20,75 +27,64 @@ export const NEIGHBORHOOD_OPTIONS = [
   "Mid-City",
   "Navajo Communities",
   "Urban Core",
-]
+];
 
-const SELECT_SX: SxProps<Theme> = {
-  color: '#fff',
-  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
-  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
-  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
-  '&.Mui-disabled .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
-  '& .MuiSelect-icon': { color: '#fff' },
-}
-
-export const SEVERITY_OPTIONS = [
-  ALL,
-  "Light",
-  "Serious",
-  "Fatal"
-]
+export const SEVERITY_OPTIONS: string[] = [ALL, "Light", "Serious", "Fatal"];
 
 export const FilterBar: React.FC<FilterBarProps> = (props: FilterBarProps) => {
-  const { neighborhood, setNeighborhoodFilter, severity, setSeverityFilter, incidentTableLoading } = props
+  const {
+    neighborhood,
+    setNeighborhoodFilter,
+    severity,
+    setSeverityFilter,
+    incidentTableLoading,
+  } = props;
 
   return (
-    <>
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", fontSize: "24px", color: '#fff' }} />
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-          <FormControl sx={{ m: 1, minWidth: 200, color: '#fff' }} size="small">
-            <InputLabel sx={{ color: '#fff' }}>Severity</InputLabel>
-            <Select
-              value={severity}
-              label="Severity"
-              onChange={(event) => setSeverityFilter(event?.target?.value)}
-              sx={SELECT_SX}
-              disabled={incidentTableLoading}
-              >
-              {SEVERITY_OPTIONS.map(val => {
-                return (
-                  <MenuItem value={val}>
-                    {val}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, minWidth: 200, color: '#fff' }} size="small">
-            <InputLabel sx={{ color: '#fff' }}>Neighborhood</InputLabel>
-            <Select
-              value={neighborhood}
-              label="Neighborhood"
-              onChange={(event) => setNeighborhoodFilter(event?.target?.value)}
-              sx={SELECT_SX}
-              disabled={incidentTableLoading}
-              >
-              {NEIGHBORHOOD_OPTIONS.map(neighborhood => {
-                return (
-                  <MenuItem value={neighborhood}>
-                    {neighborhood}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-    </>
-  )
-}
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        gap: 1,
+      }}
+    >
+      <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
+        <InputLabel id="severity-filter-label">Severity</InputLabel>
+        <Select
+          labelId="severity-filter-label"
+          value={severity}
+          label="Severity"
+          onChange={(event: SelectChangeEvent<string>) =>
+            setSeverityFilter(event.target.value)
+          }
+          disabled={incidentTableLoading}
+        >
+          {SEVERITY_OPTIONS.map((val: string) => (
+            <MenuItem key={val} value={val}>
+              {val}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
+        <InputLabel id="neighborhood-filter-label">Neighborhood</InputLabel>
+        <Select
+          labelId="neighborhood-filter-label"
+          value={neighborhood}
+          label="Neighborhood"
+          onChange={(event: SelectChangeEvent<string>) =>
+            setNeighborhoodFilter(event.target.value)
+          }
+          disabled={incidentTableLoading}
+        >
+          {NEIGHBORHOOD_OPTIONS.map((hood: string) => (
+            <MenuItem key={hood} value={hood}>
+              {hood}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Box>
+  );
+};

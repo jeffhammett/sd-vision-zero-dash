@@ -5,7 +5,7 @@ import pytz
 from services.geocoding_service import geocode_address
 from utils.pd_enums import Column, translate_severity
 from utils.translations import NEIGHBORHOOD_TO_BEATS
-from entity.generated import Incident, IncidentList, IncidentMetadata
+from entity.generated import Incident, IncidentFilter, IncidentList, IncidentMetadata
 from typing import Tuple
 from datetime import date
 
@@ -16,7 +16,7 @@ BEATS_DF_URL = (
 )
 
 
-def read_pd_csv(filter: object = {}) -> pd.DataFrame:
+def read_pd_csv(filter: IncidentFilter = {}) -> pd.DataFrame:
     """
     Column descriptions:
 
@@ -55,6 +55,16 @@ def read_pd_csv(filter: object = {}) -> pd.DataFrame:
         incident_df = incident_df[
             incident_df[Column.PERSON_INJURY_LVL].isin(valid_values)
         ]
+
+    if ("start_date" in filter) and ("end_date" in filter):
+        if filter["start_date"] > filter["end_date"]:
+            raise ValueError("Cannot have start date greater than end date")
+
+    if "start_date" in filter:
+        incident_df = incident_df[incident_df[Column.DATE_TIME] >= filter["start_date"]]
+
+    if "end_date" in filter:
+        incident_df = incident_df[incident_df[Column.DATE_TIME] <= filter["end_date"]]
 
     # Create a mapping: index = beat, value = neighborhood
     mapping = beats_df.set_index(Column.BEAT)[Column.NEIGHBORHOOD]
@@ -131,7 +141,7 @@ def map_incident_dict_to_incident_dto(incident_dicts: list[dict]) -> list[Incide
                 charge_desc=map_charge_desc(incident_dict.get(Column.CHARGE_DESC)),
                 injured=int(incident_dict.get(Column.INJURED)),
                 killed=int(incident_dict.get(Column.KILLED)),
-                neighborhood=incident_dict.get(Column.NEIGHBORHOOD),
+                neighborhood=incident_dict.get(Column.POLICE_BEAT),
                 full_address=full_address,
                 latitude=latitude,
                 longitude=longitude,

@@ -91,6 +91,10 @@ components:
             type: string
         severity:
           $ref: "#/components/schemas/Severity"
+        startDate:
+          type: string
+        endDate:
+          type: string
 
     Incident:
       type: object

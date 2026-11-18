@@ -1,1 +1,1 @@
-export const ALL = 'All'
+export const ALL = "All";

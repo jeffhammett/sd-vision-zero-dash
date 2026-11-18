@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Box from "@mui/material/Box";
+import { useTheme, Theme } from "@mui/material/styles";
 import { Incident } from "../services/incidentService";
 import { createInfoWindowContent } from "../utils/markerPopUp";
 
@@ -61,6 +62,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   clickedIncidentId,
   setClickedIncidentId,
 }) => {
+  const theme: Theme = useTheme();
   const [mapReady, setMapReady] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<Map<string, google.maps.Marker>>(new Map());
@@ -70,18 +72,21 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   const getMarkerIcon = useCallback(
     (incident: Incident, isHovered: boolean): google.maps.Symbol => {
       const size = isHovered ? 16 : 8;
-      const color = incident.killed > 0 ? "#dc3545" : "#ffc107";
+      const color: string =
+        incident.killed > 0
+          ? theme.palette.error.main
+          : theme.palette.warning.main;
 
       return {
         path: google.maps.SymbolPath.CIRCLE,
         fillColor: color,
         fillOpacity: 1,
-        strokeColor: "#fff",
+        strokeColor: theme.palette.common.white,
         strokeWeight: 2,
         scale: size,
       };
     },
-    []
+    [theme],
   );
 
   // Initialize map
@@ -104,7 +109,9 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
           return;
         }
 
-        const { Map } = (await google.maps.importLibrary("maps")) as google.maps.MapsLibrary;
+        const { Map } = (await google.maps.importLibrary(
+          "maps",
+        )) as google.maps.MapsLibrary;
 
         if (!mounted || !mapContainerRef.current) return;
 
@@ -154,7 +161,6 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
     // Add markers for incidents with valid coordinates
     incidents?.forEach((incident) => {
       if (incident.latitude !== null && incident.longitude !== null) {
-
         const marker = new google.maps.Marker({
           map: mapRef.current,
           position: { lat: incident.latitude, lng: incident.longitude },
@@ -197,7 +203,9 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   useEffect(() => {
     if (!mapReady || !infoWindowRef.current) return;
 
-    const incident: Incident | undefined = incidents?.find((i) => i.report_id === clickedIncidentId);
+    const incident: Incident | undefined = incidents?.find(
+      (i) => i.report_id === clickedIncidentId,
+    );
     const marker: google.maps.Marker | undefined = clickedIncidentId
       ? markersRef.current.get(clickedIncidentId)
       : undefined;
@@ -217,7 +225,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
       sx={{
         width: "100%",
         height: "100%",
-        borderRadius: "8px",
+        borderRadius: 1,
         overflow: "hidden",
       }}
     />
