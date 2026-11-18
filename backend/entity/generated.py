@@ -25,6 +25,8 @@ class IncidentFilter(BaseModel):
     )
     neighborhoods: list[str] | None = None
     severity: Severity | None = None
+    start_date: str | None = None
+    end_date: str | None = None
 
 
 class Incident(BaseModel):
@@ -41,7 +43,7 @@ class Incident(BaseModel):
     ]
     injured: int
     killed: int
-    neighborhood: str | None
+    neighborhood: str
     full_address: str
     latitude: float | None
     longitude: float | None

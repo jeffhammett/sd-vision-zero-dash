@@ -27,6 +27,8 @@ function App() {
   const [clickedIncidentId, setClickedIncidentId] = useState(null);
   const [neighborhood, setNeighborhood] = useState(ALL);
   const [severity, setSeverityFilter] = useState(ALL);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const pageSize = 20;
   const getCacheKey = () => `${severity}${neighborhood}${incidentTablePage}`;
@@ -41,7 +43,7 @@ function App() {
     setIncidentTableLoading(true);
     try {
       const data = await fetchIncidents(
-        { severity, neighborhood },
+        { severity, neighborhood, startDate, endDate },
         incidentTablePage + 1,
         pageSize,
       );
@@ -106,7 +108,13 @@ function App() {
       <Header />
       <Counter days={days} />
       <Divider sx={{ margin: 2, bgcolor: "#fff" }}></Divider>
-      <DateFilterBar />
+      <DateFilterBar
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        disabled={loading}
+      />
       <Box
         sx={{
           display: "flex",
