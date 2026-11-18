@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Box from "@mui/material/Box";
+import { useTheme, Theme } from "@mui/material/styles";
 import { Incident } from "../services/incidentService";
 import { createInfoWindowContent } from "../utils/markerPopUp";
 
@@ -61,6 +62,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   clickedIncidentId,
   setClickedIncidentId,
 }) => {
+  const theme: Theme = useTheme();
   const [mapReady, setMapReady] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<Map<string, google.maps.Marker>>(new Map());
@@ -70,18 +72,18 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   const getMarkerIcon = useCallback(
     (incident: Incident, isHovered: boolean): google.maps.Symbol => {
       const size = isHovered ? 16 : 8;
-      const color = incident.killed > 0 ? "#dc3545" : "#ffc107";
+      const color: string = incident.killed > 0 ? theme.palette.error.main : theme.palette.warning.main;
 
       return {
         path: google.maps.SymbolPath.CIRCLE,
         fillColor: color,
         fillOpacity: 1,
-        strokeColor: "#fff",
+        strokeColor: theme.palette.common.white,
         strokeWeight: 2,
         scale: size,
       };
     },
-    []
+    [theme]
   );
 
   // Initialize map
@@ -217,7 +219,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
       sx={{
         width: "100%",
         height: "100%",
-        borderRadius: "8px",
+        borderRadius: 1,
         overflow: "hidden",
       }}
     />

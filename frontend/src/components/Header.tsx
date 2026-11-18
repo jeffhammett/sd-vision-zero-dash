@@ -1,4 +1,5 @@
 import React from 'react';
+import { AppBar, Toolbar, Typography, ButtonBase, Box } from '@mui/material';
 import bikeSDLogo from '../assets/bikeSDLogo.jpg';
 
 const Header: React.FC = () => {
@@ -7,55 +8,45 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header style={styles.header}>
-      <h1 style={styles.title}>San Diego Vision Zero Progress Tracker</h1>
-      <button
-        onClick={handleLogoClick}
-        style={styles.logoButton}
-        aria-label="Visit BikeSd website"
-      >
-        <img
-          src={bikeSDLogo}
-          alt="BikeSd Logo"
-          style={styles.logo}
-        />
-      </button>
-    </header>
+    <AppBar
+      position="static"
+      elevation={4}
+      sx={{
+        bgcolor: 'primary.dark',
+        borderBottom: 3,
+        borderColor: 'primary.main',
+      }}
+    >
+      <Toolbar sx={{ justifyContent: 'space-between', py: 1.5, px: 4 }}>
+        <Typography
+          variant="h1"
+          component="h1"
+          sx={{ fontSize: '1.8rem', letterSpacing: '0.5px', color: 'primary.contrastText' }}
+        >
+          San Diego Vision Zero Progress Tracker
+        </Typography>
+        <ButtonBase
+          onClick={handleLogoClick}
+          aria-label="Visit BikeSd website"
+          sx={{
+            border: 2,
+            borderColor: 'primary.main',
+            borderRadius: 1,
+            p: '4px',
+            bgcolor: 'rgba(255, 255, 255, 0.05)',
+            transition: 'all 0.2s',
+          }}
+        >
+          <Box
+            component="img"
+            src={bikeSDLogo}
+            alt="BikeSd Logo"
+            sx={{ height: 60, width: 'auto', display: 'block', borderRadius: 0.5 }}
+          />
+        </ButtonBase>
+      </Toolbar>
+    </AppBar>
   );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '1.5rem 2rem',
-    backgroundColor: '#2d1f4a',
-    borderBottom: '3px solid #483292',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-  },
-  title: {
-    fontSize: '1.8rem',
-    fontWeight: 'bold',
-    margin: 0,
-    color: '#ffffff',
-    letterSpacing: '0.5px',
-  },
-  logoButton: {
-    background: 'none',
-    border: '2px solid #483292',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    padding: '4px',
-    transition: 'all 0.2s',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  logo: {
-    height: '60px',
-    width: 'auto',
-    display: 'block',
-    borderRadius: '4px',
-  },
 };
 
 export default Header;
