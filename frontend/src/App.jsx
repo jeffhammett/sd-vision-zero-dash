@@ -31,7 +31,8 @@ function App() {
   const [endDate, setEndDate] = useState(null);
 
   const pageSize = 20;
-  const getCacheKey = () => `${severity}${neighborhood}${incidentTablePage}`;
+  const getCacheKey = () =>
+    `${severity}${neighborhood}${incidentTablePage}${startDate}${endDate}`;
 
   async function loadIncidents() {
     const cacheKey = getCacheKey();
@@ -114,6 +115,7 @@ function App() {
         setStartDate={setStartDate}
         setEndDate={setEndDate}
         disabled={loading}
+        onSubmit={loadIncidents}
       />
       <Box
         sx={{

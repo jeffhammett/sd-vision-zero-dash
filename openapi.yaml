@@ -91,9 +91,9 @@ components:
             type: string
         severity:
           $ref: "#/components/schemas/Severity"
-        start_date:
+        startDate:
           type: string
-        end_date:
+        endDate:
           type: string
 
     Incident:

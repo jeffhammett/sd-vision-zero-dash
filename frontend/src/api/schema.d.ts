@@ -67,8 +67,8 @@ export interface components {
     IncidentFilter: {
       neighborhoods?: string[];
       severity?: components["schemas"]["Severity"];
-      start_date?: string;
-      end_date?: string;
+      startDate?: string;
+      endDate?: string;
     };
     Incident: {
       /** @description Collision report number */

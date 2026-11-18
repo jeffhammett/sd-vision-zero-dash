@@ -10,15 +10,15 @@ interface DateFilterBarProps {
   setStartDate: (date: Dayjs | null) => void;
   setEndDate: (date: Dayjs | null) => void;
   disabled: boolean;
+  onSubmit: () => void;
 }
 
 export const DateFilterBar: React.FC<DateFilterBarProps> = (
   props: DateFilterBarProps,
 ) => {
-  const { startDate, setStartDate, endDate, setEndDate, disabled } = props;
+  const { startDate, setStartDate, endDate, setEndDate, disabled, onSubmit } =
+    props;
   const today = dayjs(new Date());
-
-  const handleSubmit = (event: React.FormEvent) => {};
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -64,7 +64,12 @@ export const DateFilterBar: React.FC<DateFilterBarProps> = (
               },
             }}
           />
-          <Button type="submit" variant="outlined" color="secondary">
+          <Button
+            type="submit"
+            variant="outlined"
+            color="secondary"
+            onClick={onSubmit}
+          >
             Apply
           </Button>
         </Stack>

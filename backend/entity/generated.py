@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 from enum import StrEnum
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field
 from typing import Annotated
+from pydantic import AnyUrl, BaseModel, ConfigDict, Field
 from datetime import date, datetime
 from uuid import UUID
 
@@ -25,8 +25,8 @@ class IncidentFilter(BaseModel):
     )
     neighborhoods: list[str] | None = None
     severity: Severity | None = None
-    start_date: str | None = None
-    end_date: str | None = None
+    start_date: Annotated[str | None, Field(alias="startDate")] = None
+    end_date: Annotated[str | None, Field(alias="endDate")] = None
 
 
 class Incident(BaseModel):
